@@ -1,0 +1,42 @@
+:root {
+    --grid-rows: 15;
+    --grid-columns: 25;
+  }
+body{
+    margin: 0;
+    padding: 0;    
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width:80%;
+    margin: 50px auto;
+}
+
+.snake-grid{
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns),40px);
+    grid-template-rows: repeat(var(--grid-rows),40px);
+    border-left: 1px solid black;
+    border-top:1px solid black;
+    background-color: aqua;
+}
+
+.cell{
+    border-bottom: 1px solid black;    
+    border-right: 1px solid black;
+}
+
+.snake-body{
+    background-color:blue
+}
+
+.food{
+    background-color: violet;
+}
