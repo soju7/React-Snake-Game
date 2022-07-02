@@ -1,5 +1,5 @@
 import '../css/snake.css';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState} from 'react';
 var _ = require('lodash');
 
 function SnakeGame() {
@@ -22,8 +22,6 @@ function SnakeGame() {
   const [foodSpot, setFoodSpot] = useState({});
 
   const [direction, setDirection] = useState(KEY_DIRECTIONS['ArrowRight']);
-
-  const interval = useRef(null)
 
   let gridItems = [];
   for (let i = 0; i < GRID_ROWS; i++) {
@@ -71,6 +69,7 @@ function SnakeGame() {
       return 'ArrowDown';
     }
   }
+
   function moveSnake() {
     let { x: snakeHeadX, y: snakeHeadY } = snakeBody[0];
 
@@ -105,6 +104,7 @@ function SnakeGame() {
     newState[0].y = snakeHeadY;
     setSnakeBody(newState);
   }
+
   function isCellContainSnakeBody(x, y) {
     return snakeBody.find(function (el) {
       return el.x == x && el.y == y;
