@@ -35,14 +35,9 @@ function SnakeGame() {
 
   useEffect(() => {
     setGrid(gridItems);
-    window.addEventListener("keydown", (e) => {
-      if (typeof KEY_DIRECTIONS[e.key] === 'undefined')
-        return;
-
-      setDirection(KEY_DIRECTIONS[e.key])
-    })
+    window.addEventListener("keydown", handleKeyDown)
     return () => {
-      window.removeEventListener('keydown', () => { });
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
@@ -53,7 +48,14 @@ function SnakeGame() {
 
     return () => clearInterval(interval);
   }, [direction, snakeBody]);
-  
+
+
+  function handleKeyDown(e){
+    if (typeof KEY_DIRECTIONS[e.key] === 'undefined')
+        return;
+
+    setDirection(KEY_DIRECTIONS[e.key])
+  }
 
   function getDirection(x, y) {
     if (x == 0 && y == -1) {
