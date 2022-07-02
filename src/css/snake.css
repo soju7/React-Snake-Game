@@ -16,7 +16,7 @@ body{
     justify-content: center;
     align-items: center;
     max-width:80%;
-    margin: 50px auto;
+    margin: 0 auto;
 }
 
 .snake-grid{
