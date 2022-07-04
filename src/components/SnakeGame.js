@@ -55,7 +55,7 @@ function SnakeGame(props) {
 
     const interval = setInterval(() => {
       moveSnake();
-    }, 200)
+    }, 100)
     setTimer(interval);
 
 
@@ -97,7 +97,7 @@ function SnakeGame(props) {
   }
 
   function moveSnake() {
-    if (isSnakeHeadCollidedWithitsBody()) {
+    if (isSnakeCollideItself()) {
       clearInterval(timer);
       return;
     }
@@ -163,7 +163,7 @@ function SnakeGame(props) {
     return foodSpot.x == snakeHeadX && foodSpot.y == snakeHeadY;
   }
 
-  function isSnakeHeadCollidedWithitsBody() {
+  function isSnakeCollideItself() {
     let bodyOfSnake = snakeBody;
     let headOfSnake = snakeBody[0];
     return bodyOfSnake.some((bodyPart, index) => {
