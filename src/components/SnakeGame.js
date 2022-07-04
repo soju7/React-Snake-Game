@@ -1,8 +1,8 @@
 import '../css/snake.css';
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 var _ = require('lodash');
 
-function SnakeGame() {
+function SnakeGame(props) {
 
   const GRID_ROWS = parseInt(getComputedStyle(document.body).getPropertyValue('--grid-rows'));
 
@@ -17,11 +17,17 @@ function SnakeGame() {
 
   const [grid, setGrid] = useState([]);
 
-  const [snakeBody, setSnakeBody] = useState([{ x: 4, y: 4 }, { x: 4, y: 3 }, { x: 5, y: 3 }, { x: 5, y: 2 }, { x: 5, y: 1 }]);
+  const [snakeBody, setSnakeBody] = useState([{ x: 4, y: 4 }]);
 
   const [foodSpot, setFoodSpot] = useState({});
 
   const [direction, setDirection] = useState(KEY_DIRECTIONS['ArrowRight']);
+
+  const [score, setScore] = useState(0);
+
+  const [timer, setTimer] = useState('');
+
+  const [startGame, setStartGame] = useState(props.startGame);
 
   let gridItems = [];
   for (let i = 0; i < GRID_ROWS; i++) {
@@ -31,8 +37,10 @@ function SnakeGame() {
     }
   }
 
+
   useEffect(() => {
     setGrid(gridItems);
+    setFoodSpot(calculateFoodSpot())
     window.addEventListener("keydown", handleKeyDown)
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
@@ -40,17 +48,35 @@ function SnakeGame() {
   }, []);
 
   useEffect(() => {
+    if (!startGame) {
+      clearInterval(timer);
+      return;
+    }
+
     const interval = setInterval(() => {
       moveSnake();
-    }, 500)
+    }, 200)
+    setTimer(interval);
+
 
     return () => clearInterval(interval);
-  }, [direction, snakeBody]);
+  }, [direction, snakeBody, startGame]);
+
+  useEffect(() => {
+    setStartGame(props.startGame);
+  }, [props])
 
 
-  function handleKeyDown(e){
+  useEffect(() => {
+    props.setScore(score);
+  }, [score])
+
+
+
+
+  function handleKeyDown(e) {
     if (typeof KEY_DIRECTIONS[e.key] === 'undefined')
-        return;
+      return;
 
     setDirection(KEY_DIRECTIONS[e.key])
   }
@@ -71,11 +97,16 @@ function SnakeGame() {
   }
 
   function moveSnake() {
+    if (isSnakeHeadCollidedWithitsBody()) {
+      clearInterval(timer);
+      return;
+    }
     let { x: snakeHeadX, y: snakeHeadY } = snakeBody[0];
 
     let movement = getDirection(direction.x, direction.y);
 
     let newState = [...snakeBody];
+
 
     if (snakeHeadY >= GRID_COLUMNS && movement == 'ArrowRight') {
       snakeHeadY = -1;
@@ -96,12 +127,19 @@ function SnakeGame() {
     snakeHeadX = snakeHeadX + direction.x;
     snakeHeadY = snakeHeadY + direction.y;
 
+    if (isSnakeHeadAtFoodSpot(snakeHeadX, snakeHeadY)) {
+      setFoodSpot(calculateFoodSpot())
+      setScore(score + 1);
+      newState.push({ x: snakeHeadX, y: snakeHeadY })
+    }
+
     for (let i = newState.length - 1; i > 0; i--) {
       newState[i] = { ...newState[i - 1] };
     }
 
     newState[0].x = snakeHeadX;
     newState[0].y = snakeHeadY;
+
     setSnakeBody(newState);
   }
 
@@ -113,6 +151,24 @@ function SnakeGame() {
 
   function isCellContainFood(x, y) {
     return foodSpot.x == x && foodSpot.y == y;
+  }
+
+  function calculateFoodSpot() {
+    let x = Math.floor((Math.random() * (gridItems.length)));
+    let y = gridItems[x][Math.floor((Math.random() * (gridItems[x].length)))];
+    return { x, y };
+  }
+
+  function isSnakeHeadAtFoodSpot(snakeHeadX, snakeHeadY) {
+    return foodSpot.x == snakeHeadX && foodSpot.y == snakeHeadY;
+  }
+
+  function isSnakeHeadCollidedWithitsBody() {
+    let bodyOfSnake = snakeBody;
+    let headOfSnake = snakeBody[0];
+    return bodyOfSnake.some((bodyPart, index) => {
+      return index != 0 && bodyPart.x == headOfSnake.x && bodyPart.y == headOfSnake.y
+    });
   }
 
   return (
